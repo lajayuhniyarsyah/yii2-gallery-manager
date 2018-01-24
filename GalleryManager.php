@@ -31,6 +31,10 @@ class GalleryManager extends Widget
 
     public $options = array();
 
+    public $renderView = 'galleryManager';
+
+    public $cssMode = 'bootstrap';
+
 
     public function init()
     {
@@ -79,7 +83,7 @@ class GalleryManager extends Widget
         $opts = array(
             'hasName' => $this->behavior->hasName ? true : false,
             'hasDesc' => $this->behavior->hasDescription ? true : false,
-            'uploadUrl' => Url::to($baseUrl + ['action' => 'ajaxUpload']),
+            'uploadUrl' => ($this->renderView == 'singleGalleryManager' ? Url::to($baseUrl + ['action' => 'ajaxReplace']):Url::to($baseUrl + ['action' => 'ajaxUpload'])),
             'deleteUrl' => Url::to($baseUrl + ['action' => 'delete']),
             'updateUrl' => Url::to($baseUrl + ['action' => 'changeData']),
             'arrangeUrl' => Url::to($baseUrl + ['action' => 'order']),
@@ -87,16 +91,40 @@ class GalleryManager extends Widget
             'descriptionLabel' => Yii::t('galleryManager/main', 'Description'),
             'photos' => $images,
         );
+        if(isset($this->options['jsOptions'])){
+            $opts = array_merge($opts, $this->options['jsOptions']);
+        }
+        
 
         $opts = Json::encode($opts);
         $view = $this->getView();
-        GalleryManagerAsset::register($view);
+
+        $asset = GalleryManagerAsset::register($view);
+        if($this->renderView=='singleGalleryManager'){
+            $asset->js[] = 'jquery.single.galleryManager.js';
+            $asset->css[] = 'singleGalleryManager.css';
+        }else{
+            
+            if($this->cssMode=='foundation'){
+                $asset->js[] = 'foundation.galleryManager.js';
+                $asset->css[] = 'foundationGalleryManager.css';
+                $this->renderView = 'foundationGalleryManager';
+            }else{
+                $asset->js[] = 'jquery.galleryManager.js';
+                $asset->css[] = 'galleryManager.css';
+            }
+            
+        }
+        
+
         $view->registerJs("$('#{$this->id}').galleryManager({$opts});");
 
         $this->options['id'] = $this->id;
         $this->options['class'] = 'gallery-manager';
 
-        return $this->render('galleryManager');
+        // Yii::$app->assetManager->forceCopy=true;
+
+        return $this->render($this->renderView);
     }
 
 }

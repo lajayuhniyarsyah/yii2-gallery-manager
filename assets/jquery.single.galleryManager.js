@@ -80,20 +80,11 @@
     }
 
     var photoTemplate = '<div class="photo">' + '<div class="image-preview"><img src=""/></div><div class="caption">';
-    if (opts.hasName) {
-      photoTemplate += '<h5></h5>';
-    }
-    if (opts.hasDesc) {
-      photoTemplate += '<p></p>';
-    }
+    
     photoTemplate += '</div><div class="actions">';
 
-    if (opts.hasName || opts.hasDesc) {
-      photoTemplate += '<span class="editPhoto btn btn-primary btn-xs"><i class="glyphicon glyphicon-pencil glyphicon-white"></i></span> ';
-    }
-
-    photoTemplate += '<span class="deletePhoto btn btn-danger btn-xs"><i class="glyphicon glyphicon-remove glyphicon-white"></i></span>' +
-    '</div><input type="checkbox" class="photo-select"/></div>';
+    photoTemplate += '<span class="deletePhoto button btn-danger btn-xs"><i class="fa fa-remove"></i></span>' +
+    '</div></div>';
 
 
     function addPhoto(id, src, name, description, rank) {
@@ -125,9 +116,6 @@
           name = $('.caption h5', photo).text(),
           description = $('.caption p', photo).text();
         form.append(createEditorElement(id, src, name, description));
-      }
-      if (l > 0){
-        $editorModal.modal('show');
       }
     }
 
@@ -235,6 +223,16 @@
           xhr.onload = function () {
             uploadedCount++;
             if (this.status == 200) {
+              console.log(photos);
+              $.each( photos, function( pKey, pObj ) {
+                console.log(['removing ', pKey, pObj]);
+                photos[pKey].remove();
+                delete photos[pKey];
+                
+
+                // photos[ids[i]].remove();
+                // delete photos[ids[i]];
+              });
               var resp = JSON.parse(this.response);
               addPhoto(resp['id'], resp['preview'], resp['name'], resp['description'], resp['rank']);
               ids.push(resp['id']);

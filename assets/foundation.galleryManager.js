@@ -16,6 +16,9 @@
     updateUrl: '',
     arrangeUrl: '',
 
+    noEdit:false,
+    noRemove:false,
+
     photos: []
   };
 
@@ -88,11 +91,11 @@
     }
     photoTemplate += '</div><div class="actions">';
 
-    if (opts.hasName || opts.hasDesc) {
-      photoTemplate += '<span class="editPhoto btn btn-primary btn-xs"><i class="glyphicon glyphicon-pencil glyphicon-white"></i></span> ';
+    if ((opts.hasName || opts.hasDesc) && opts.noEdit!=true) {
+      photoTemplate += '<span class="editPhoto button primary btn-xs"><i class="fa fa-pencil glyphicon-white"></i></span> ';
     }
 
-    photoTemplate += '<span class="deletePhoto btn btn-danger btn-xs"><i class="glyphicon glyphicon-remove glyphicon-white"></i></span>' +
+    photoTemplate += '<span class="deletePhoto button danger btn-xs"><i class="fa fa-remove glyphicon-white"></i></span>' +
     '</div><input type="checkbox" class="photo-select"/></div>';
 
 
@@ -127,7 +130,9 @@
         form.append(createEditorElement(id, src, name, description));
       }
       if (l > 0){
-        $editorModal.modal('show');
+        if(opts.noEdit==false){
+          $editorModal.modal('show');
+        }
       }
     }
 
